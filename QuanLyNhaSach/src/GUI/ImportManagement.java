@@ -4,19 +4,66 @@
  */
 package GUI;
 
+import BUS.NhaCungCap_BUS;
+import DAL.DBConnection;
+import DTO.NhaCungCap;
+import java.util.ArrayList;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author 19522
  */
 public class ImportManagement extends javax.swing.JFrame {
 
+    DBConnection connection;
+    public String valueMaNCC;
     /**
      * Creates new form Storage
      */
     public ImportManagement() {
         initComponents();
+        loadAllSupplier();
     }
-
+ 
+    private void loadAllSupplier() {
+        DefaultTableModel tableModel = (DefaultTableModel) SearchSupplierTable.getModel();
+        ArrayList<NhaCungCap> arr = new ArrayList<NhaCungCap>();
+        NhaCungCap_BUS nhacungcap_BUS = new NhaCungCap_BUS();
+        arr = nhacungcap_BUS.getNhaCungCap();
+        NhaCungCap nhacungcap = new NhaCungCap();
+        try {
+            for(int i = 0; i< arr.size(); i++)
+            {
+                nhacungcap = arr.get(i);
+                String id = nhacungcap.getMaNhaCC();
+                String name = nhacungcap.getTenNhaCC();
+                Object[] row = {id, name};
+                tableModel.addRow(row);
+            }
+        } catch (Exception e) {
+            System.err.println("No thing!");
+        }
+        SearchSupplierTable.setModel(tableModel);
+    }
+    
+     public void reset() // reset the Jtable to null
+    {
+        DefaultTableModel tableModel = (DefaultTableModel) SearchSupplierTable.getModel();
+        tableModel.setRowCount(0);
+        SearchSupplierTable.setModel(tableModel);
+    }
+     
+    public void resetText() // reset textfield after event done!
+    {
+        SearchTxb.setText("");
+        NameTxb.setText("");
+        NameTxb.enable(true);
+        AddressTxb.setText("");
+        PhoneNumberTxb.setText("");
+        EmailTxb.setText("");
+        ProductTxb.setText("");
+    }
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -33,7 +80,7 @@ public class ImportManagement extends javax.swing.JFrame {
         ParentPanel = new javax.swing.JTabbedPane();
         SearchTab = new javax.swing.JPanel();
         jScrollPane1 = new javax.swing.JScrollPane();
-        SearchTable = new javax.swing.JTable();
+        SearchSupplierTable = new javax.swing.JTable();
         SearchTxb = new javax.swing.JTextField();
         SearchBtn = new javax.swing.JButton();
         DeleteBtn = new javax.swing.JButton();
@@ -136,7 +183,7 @@ public class ImportManagement extends javax.swing.JFrame {
 
         jScrollPane1.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
 
-        SearchTable.setModel(new javax.swing.table.DefaultTableModel(
+        SearchSupplierTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
             },
@@ -152,11 +199,11 @@ public class ImportManagement extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        SearchTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
-        SearchTable.setGridColor(new java.awt.Color(0, 0, 0));
-        SearchTable.setShowGrid(true);
-        jScrollPane1.setViewportView(SearchTable);
-        SearchTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        SearchSupplierTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_ALL_COLUMNS);
+        SearchSupplierTable.setGridColor(new java.awt.Color(0, 0, 0));
+        SearchSupplierTable.setShowGrid(true);
+        jScrollPane1.setViewportView(SearchSupplierTable);
+        SearchSupplierTable.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
 
         SearchTab.add(jScrollPane1, new org.netbeans.lib.awtextra.AbsoluteConstraints(0, 0, 935, 590));
 
@@ -710,8 +757,8 @@ public class ImportManagement extends javax.swing.JFrame {
     private javax.swing.JButton SearchBtn;
     private javax.swing.JButton SearchBtn1;
     private javax.swing.JButton SearchBtn2;
+    private javax.swing.JTable SearchSupplierTable;
     private javax.swing.JPanel SearchTab;
-    private javax.swing.JTable SearchTable;
     private javax.swing.JTable SearchTable1;
     private javax.swing.JTable SearchTable2;
     private javax.swing.JTable SearchTable3;
@@ -755,4 +802,6 @@ public class ImportManagement extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
     // End of variables declaration//GEN-END:variables
+
+   
 }
