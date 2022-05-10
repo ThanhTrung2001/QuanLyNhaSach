@@ -4,24 +4,221 @@
  */
 package GUI;
 
+import DTO.*;
+import BUS.*;
+import DAL.DBConnection;
+import java.sql.ResultSet;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author 19522
  */
 public class StaffManagement extends javax.swing.JFrame {
+    DBConnection connection;
+    public String valueMaTK;
+    public int RoleCbIndex;
 
     /**
      * Creates new form StaffManagement
      */
     public StaffManagement() {
         initComponents();
+        loadAllTaiKhoan();
+        loadRoleCbData();
     }
-
+    
+    //Load all Staff from the begining
+    public void loadAllTaiKhoan()
+    {
+        DefaultTableModel tableModel = (DefaultTableModel) SearchTable.getModel();
+        ArrayList<TaiKhoan> arr = new ArrayList<TaiKhoan>();
+        TaiKhoan_BUS taikhoan_BUS = new TaiKhoan_BUS();
+        arr = taikhoan_BUS.getAllTaiKhoan();
+        TaiKhoan taikhoan = new TaiKhoan();
+        try
+        {
+            for(int i = 0; i < arr.size(); i++)
+            {
+                taikhoan = arr.get(i);
+                String id = taikhoan.getMaTK();
+                String hoten = taikhoan.getHoTen();
+                String diachi = taikhoan.getDiaChi();
+                String sdt = taikhoan.getSDT();
+                String email = taikhoan.getEmail();
+                Object[]row = {id, hoten, diachi, sdt, email};
+                tableModel.addRow(row);
+            }
+        }catch (Exception e)
+        {
+            System.err.println("Not thing to show");
+        }
+        SearchTable.setModel(tableModel);
+        
+    }
+    
+    public void loadAllAdmin()
+    {
+        DefaultTableModel tableModel = (DefaultTableModel) SearchTable.getModel();
+        ArrayList<TaiKhoan> arr = new ArrayList<TaiKhoan>();
+        TaiKhoan_BUS taikhoan_BUS = new TaiKhoan_BUS();
+        arr = taikhoan_BUS.getAllAdmin();
+        TaiKhoan taikhoan = new TaiKhoan();
+        try
+        {
+            for(int i = 0; i < arr.size(); i++)
+            {
+                taikhoan = arr.get(i);
+                String id = taikhoan.getMaTK();
+                String hoten = taikhoan.getHoTen();
+                String diachi = taikhoan.getDiaChi();
+                String sdt = taikhoan.getSDT();
+                String email = taikhoan.getEmail();
+                Object[]row = {id, hoten, diachi, sdt, email};
+                tableModel.addRow(row);
+            }
+        }catch (Exception e)
+        {
+            System.err.println("Not thing to show");
+        }
+        SearchTable.setModel(tableModel);
+    }
+    
+    public void loadAllStaff()
+    {
+        DefaultTableModel tableModel = (DefaultTableModel) SearchTable.getModel();
+        ArrayList<TaiKhoan> arr = new ArrayList<TaiKhoan>();
+        TaiKhoan_BUS taikhoan_BUS = new TaiKhoan_BUS();
+        arr = taikhoan_BUS.getAllStaff();
+        TaiKhoan taikhoan = new TaiKhoan();
+        try
+        {
+            for(int i = 0; i < arr.size(); i++)
+            {
+                taikhoan = arr.get(i);
+                String id = taikhoan.getMaTK();
+                String hoten = taikhoan.getHoTen();
+                String diachi = taikhoan.getDiaChi();
+                String sdt = taikhoan.getSDT();
+                String email = taikhoan.getEmail();
+                Object[]row = {id, hoten, diachi, sdt, email};
+                tableModel.addRow(row);
+            }
+        }catch (Exception e)
+        {
+            System.err.println("Not thing to show");
+        }
+        SearchTable.setModel(tableModel);
+    }
+    
+    public void loadRoleCbData()
+    {
+        connection = new DBConnection();
+        String query = "select TenTheLoai from Sach";
+        try {
+            ResultSet rs = connection.ExcuteQueryGetTable(query);
+            while(rs.next())
+            {
+                String name = rs.getString("TenTheLoai");
+                RoleCb.addItem(name);
+            }
+        } catch (Exception e) {
+            System.err.println("No thing!");
+        }
+        
+    }
+    
+    public void reset() // reset the Jtable to null
+    {
+        DefaultTableModel tableModel = (DefaultTableModel) SearchTable.getModel();
+        tableModel.setRowCount(0);
+        SearchTable.setModel(tableModel);
+    }
+    
+    public void ResetText()
+    {
+        SearchTxb.setText("");
+        EmailText.setText("");
+        PassText.setText("");
+        NameText.setText("");
+        AddressText.setText("");
+        PhoneText.setText("");
+        
+    }
+    
+    private void BackBtnMouseClicked(java.awt.event.MouseEvent evt) {                                     
+        // Return to Home
+        this.dispose();
+    }
+    
+    
+    public String randomID() // get random to generate ID for all of things
+    {
+        LocalDateTime local = LocalDateTime.now();
+        long milis = local.getNano();
+        String id = Long.toString(milis);
+        System.err.println(id);
+        return id;
+    }
+    
+    public void SelectRow()
+    {
+        //Get data from table
+        DefaultTableModel tableModel = (DefaultTableModel) SearchTable.getModel();
+        valueMaTK = tableModel.getValueAt(SearchTable.getSelectedRow(), 0).toString();
+        String name = tableModel.getValueAt(SearchTable.getSelectedRow(), 1).toString();
+        String email = tableModel.getValueAt(SearchTable.getSelectedRow(), 2).toString();
+        String pass = tableModel.getValueAt(SearchTable.getSelectedRow(), 3).toString();
+        String address = tableModel.getValueAt(SearchTable.getSelectedRow(), 4).toString();
+        String phone = tableModel.getValueAt(SearchTable.getSelectedRow(), 5).toString();
+        //Set TextField
+        NameText.setText(name);
+        NameText.enable(false);
+        EmailText.setText(email);
+        PassText.setText(pass);
+        AddressText.setText(address);
+        PhoneText.setText(phone);
+        
+    }
+    
+    public void SearchTaiKhoan()
+    {
+        reset();
+        String search = SearchTxb.getText();
+        DefaultTableModel table = (DefaultTableModel) SearchTable.getModel();
+        ArrayList<TaiKhoan> arr = new ArrayList<TaiKhoan>();
+        TaiKhoan_BUS taikhoan_BUS = new TaiKhoan_BUS();
+        arr = taikhoan_BUS.searchTaiKhoan(search);
+        TaiKhoan taikhoan = new TaiKhoan();
+        try {
+            for(int i = 0; i < arr.size(); i++)
+            {
+                taikhoan = arr.get(i);
+                String id = taikhoan.getMaTK();
+                String hoten = taikhoan.getHoTen();
+                String diachi = taikhoan.getDiaChi();
+                String sdt = taikhoan.getSDT();
+                String email = taikhoan.getEmail();
+                Object[]row = {id, hoten, diachi, sdt, email};
+                table.addRow(row);        
+            }
+        }catch (Exception e) {
+            System.err.println("Not thing to show!");
+        }
+        SearchTable.setModel(table);
+        
+    }
+    
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
      * regenerated by the Form Editor.
      */
+    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -39,10 +236,10 @@ public class StaffManagement extends javax.swing.JFrame {
         SearchBtn = new javax.swing.JButton();
         DeleteBtn = new javax.swing.JButton();
         EditChangeBtn = new javax.swing.JButton();
-        jRadioButton1 = new javax.swing.JRadioButton();
-        jRadioButton2 = new javax.swing.JRadioButton();
-        jRadioButton3 = new javax.swing.JRadioButton();
-        EditChangeBtn1 = new javax.swing.JButton();
+        AllRadio = new javax.swing.JRadioButton();
+        AdminRadio = new javax.swing.JRadioButton();
+        StaffRadio = new javax.swing.JRadioButton();
+        NewButton = new javax.swing.JButton();
         AddTab = new javax.swing.JPanel();
         EmailText = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
@@ -55,7 +252,7 @@ public class StaffManagement extends javax.swing.JFrame {
         jLabel11 = new javax.swing.JLabel();
         UpdateCustomerBtn = new javax.swing.JButton();
         jPanel3 = new javax.swing.JPanel();
-        jComboBox1 = new javax.swing.JComboBox<>();
+        RoleCb = new javax.swing.JComboBox<>();
         jLabel6 = new javax.swing.JLabel();
         jLabel7 = new javax.swing.JLabel();
         PassText = new javax.swing.JTextField();
@@ -133,11 +330,21 @@ public class StaffManagement extends javax.swing.JFrame {
 
         SearchBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Component/Minisize/icons8_search_35px.png"))); // NOI18N
         SearchBtn.setToolTipText("Search");
+        SearchBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                SearchBtnActionPerformed(evt);
+            }
+        });
         SearchTab.add(SearchBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(1070, 110, -1, 52));
 
         DeleteBtn.setBackground(new java.awt.Color(255, 51, 102));
         DeleteBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         DeleteBtn.setText("DELETE");
+        DeleteBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DeleteBtnActionPerformed(evt);
+            }
+        });
         SearchTab.add(DeleteBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(1040, 528, 116, 51));
 
         EditChangeBtn.setBackground(new java.awt.Color(255, 204, 204));
@@ -148,34 +355,59 @@ public class StaffManagement extends javax.swing.JFrame {
                 EditChangeBtnMouseClicked(evt);
             }
         });
-        SearchTab.add(EditChangeBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(1040, 438, 116, 51));
-
-        FilterStaffGroup.add(jRadioButton1);
-        jRadioButton1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jRadioButton1.setSelected(true);
-        jRadioButton1.setText("All");
-        SearchTab.add(jRadioButton1, new org.netbeans.lib.awtextra.AbsoluteConstraints(953, 9, -1, -1));
-
-        FilterStaffGroup.add(jRadioButton2);
-        jRadioButton2.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jRadioButton2.setText("Admin");
-        jRadioButton2.setToolTipText("");
-        SearchTab.add(jRadioButton2, new org.netbeans.lib.awtextra.AbsoluteConstraints(1070, 10, -1, -1));
-
-        FilterStaffGroup.add(jRadioButton3);
-        jRadioButton3.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        jRadioButton3.setText("Staff");
-        SearchTab.add(jRadioButton3, new org.netbeans.lib.awtextra.AbsoluteConstraints(1200, 10, -1, -1));
-
-        EditChangeBtn1.setBackground(new java.awt.Color(153, 255, 153));
-        EditChangeBtn1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
-        EditChangeBtn1.setText("NEW");
-        EditChangeBtn1.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                EditChangeBtn1MouseClicked(evt);
+        EditChangeBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                EditChangeBtnActionPerformed(evt);
             }
         });
-        SearchTab.add(EditChangeBtn1, new org.netbeans.lib.awtextra.AbsoluteConstraints(1040, 349, 116, 51));
+        SearchTab.add(EditChangeBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(1040, 438, 116, 51));
+
+        FilterStaffGroup.add(AllRadio);
+        AllRadio.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        AllRadio.setSelected(true);
+        AllRadio.setText("All");
+        AllRadio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AllRadioActionPerformed(evt);
+            }
+        });
+        SearchTab.add(AllRadio, new org.netbeans.lib.awtextra.AbsoluteConstraints(953, 9, -1, -1));
+
+        FilterStaffGroup.add(AdminRadio);
+        AdminRadio.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        AdminRadio.setText("Admin");
+        AdminRadio.setToolTipText("");
+        AdminRadio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AdminRadioActionPerformed(evt);
+            }
+        });
+        SearchTab.add(AdminRadio, new org.netbeans.lib.awtextra.AbsoluteConstraints(1070, 10, -1, -1));
+
+        FilterStaffGroup.add(StaffRadio);
+        StaffRadio.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        StaffRadio.setText("Staff");
+        StaffRadio.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                StaffRadioActionPerformed(evt);
+            }
+        });
+        SearchTab.add(StaffRadio, new org.netbeans.lib.awtextra.AbsoluteConstraints(1200, 10, -1, -1));
+
+        NewButton.setBackground(new java.awt.Color(153, 255, 153));
+        NewButton.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
+        NewButton.setText("NEW");
+        NewButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                NewButtonMouseClicked(evt);
+            }
+        });
+        NewButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                NewButtonActionPerformed(evt);
+            }
+        });
+        SearchTab.add(NewButton, new org.netbeans.lib.awtextra.AbsoluteConstraints(1040, 349, 116, 51));
 
         ParentPanel.addTab("Search Staff", new javax.swing.ImageIcon(getClass().getResource("/GUI/Component/Minisize/icons8_search_35px.png")), SearchTab); // NOI18N
 
@@ -212,6 +444,11 @@ public class StaffManagement extends javax.swing.JFrame {
         AddCustomerBtn.setBackground(new java.awt.Color(153, 255, 153));
         AddCustomerBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         AddCustomerBtn.setText("ADD STAFF");
+        AddCustomerBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AddCustomerBtnActionPerformed(evt);
+            }
+        });
         AddTab.add(AddCustomerBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(570, 480, 244, 51));
 
         jLabel11.setIcon(new javax.swing.ImageIcon(getClass().getResource("/GUI/Component/istockphoto-1223671392-612x612-1.jpg"))); // NOI18N
@@ -220,6 +457,11 @@ public class StaffManagement extends javax.swing.JFrame {
         UpdateCustomerBtn.setBackground(new java.awt.Color(255, 204, 204));
         UpdateCustomerBtn.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         UpdateCustomerBtn.setText("UPDATE STAFF");
+        UpdateCustomerBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                UpdateCustomerBtnActionPerformed(evt);
+            }
+        });
         AddTab.add(UpdateCustomerBtn, new org.netbeans.lib.awtextra.AbsoluteConstraints(840, 480, 244, 51));
 
         jPanel3.setBackground(new java.awt.Color(0, 0, 0));
@@ -237,7 +479,12 @@ public class StaffManagement extends javax.swing.JFrame {
 
         AddTab.add(jPanel3, new org.netbeans.lib.awtextra.AbsoluteConstraints(450, 15, 3, 490));
 
-        AddTab.add(jComboBox1, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 420, 240, 50));
+        RoleCb.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                RoleCbActionPerformed(evt);
+            }
+        });
+        AddTab.add(RoleCb, new org.netbeans.lib.awtextra.AbsoluteConstraints(700, 420, 240, 50));
 
         jLabel6.setFont(new java.awt.Font("Segoe UI", 1, 24)); // NOI18N
         jLabel6.setText("Full Name :");
@@ -288,12 +535,117 @@ public class StaffManagement extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void EditChangeBtnMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_EditChangeBtnMouseClicked
+        SelectRow();
         ParentPanel.setSelectedIndex(2);
     }//GEN-LAST:event_EditChangeBtnMouseClicked
 
-    private void EditChangeBtn1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_EditChangeBtn1MouseClicked
+    private void NewButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_NewButtonMouseClicked
         // TODO add your handling code here:
-    }//GEN-LAST:event_EditChangeBtn1MouseClicked
+        
+    }//GEN-LAST:event_NewButtonMouseClicked
+
+    private void SearchBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_SearchBtnActionPerformed
+        SearchTaiKhoan();
+    }//GEN-LAST:event_SearchBtnActionPerformed
+
+    private void AddCustomerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AddCustomerBtnActionPerformed
+         // Add Staff
+        TaiKhoan taikhoan = new TaiKhoan();
+        if(NameText.getText().equals(""))
+        {
+            JOptionPane.showMessageDialog(this, "Please fill atleast the name of staff...");
+        }
+        else
+        {
+            taikhoan.setMaTK("C" + randomID());
+            taikhoan.setEmail(EmailText.getText());
+            taikhoan.setMatKhau(PassText.getText());
+            taikhoan.setHoTen(NameText.getText());
+            taikhoan.setDiaChi(AddressText.getText());
+            taikhoan.setSDT(PhoneText.getText());
+            taikhoan.setMaPhanQuyen(RoleCb.getSelectedItem().toString());
+        }
+        TaiKhoan_BUS taikhoan_BUS = new TaiKhoan_BUS();
+        taikhoan_BUS.addTaiKhoan(taikhoan);
+        JOptionPane.showMessageDialog(this, "Add Staff success!");
+        reset();
+        loadAllStaff();
+        ParentPanel.setSelectedIndex(0);
+    }//GEN-LAST:event_AddCustomerBtnActionPerformed
+
+    private void UpdateCustomerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_UpdateCustomerBtnActionPerformed
+        // Update Staff
+        TaiKhoan taikhoan = new TaiKhoan();
+            taikhoan.setMaTK(valueMaTK);
+            taikhoan.setEmail(EmailText.getText());
+            taikhoan.setMatKhau(PassText.getText());
+            taikhoan.setHoTen(NameText.getText());
+            taikhoan.setDiaChi(AddressText.getText());
+            taikhoan.setSDT(PhoneText.getText());
+            taikhoan.setMaPhanQuyen(RoleCb.getSelectedItem().toString());
+        TaiKhoan_BUS taikhoan_BUS = new TaiKhoan_BUS();
+        taikhoan_BUS.addTaiKhoan(taikhoan);
+        JOptionPane.showMessageDialog(this, "Update Staff success!");
+        reset();
+        ResetText();
+        loadAllStaff();
+        ParentPanel.setSelectedIndex(0);
+
+    }//GEN-LAST:event_UpdateCustomerBtnActionPerformed
+
+    private void DeleteBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DeleteBtnActionPerformed
+        //Delete Staff
+        SelectRow();
+        TaiKhoan_BUS taikhoan_BUS = new TaiKhoan_BUS();
+        taikhoan_BUS.deleteTaiKhoan(valueMaTK);
+        JOptionPane.showMessageDialog(this, "Delete Staff success!");
+        reset();
+        ResetText();
+        loadAllStaff();
+    }//GEN-LAST:event_DeleteBtnActionPerformed
+
+    private void NewButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_NewButtonActionPerformed
+        // TODO add your handling code here:
+        ParentPanel.setSelectedIndex(1);
+    }//GEN-LAST:event_NewButtonActionPerformed
+
+    private void EditChangeBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_EditChangeBtnActionPerformed
+        // TODO add your handling code here:
+        SelectRow();
+        ParentPanel.setSelectedIndex(1);
+    }//GEN-LAST:event_EditChangeBtnActionPerformed
+
+    private void AdminRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AdminRadioActionPerformed
+        // TODO add your handling code here: 
+        if(AdminRadio.isSelected()==true)
+        {
+            reset();
+            loadAllAdmin();
+        }
+    }//GEN-LAST:event_AdminRadioActionPerformed
+
+    private void AllRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AllRadioActionPerformed
+
+        // TODO add your handling code here:
+        if(AllRadio.isSelected()==true)
+        {
+            reset();
+            loadAllTaiKhoan();
+        }
+    }//GEN-LAST:event_AllRadioActionPerformed
+
+    private void StaffRadioActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_StaffRadioActionPerformed
+        // TODO add your handling code here:
+        if(StaffRadio.isSelected()==true)
+        {
+            reset();
+            loadAllStaff();
+        }
+    }//GEN-LAST:event_StaffRadioActionPerformed
+
+    private void RoleCbActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_RoleCbActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_RoleCbActionPerformed
 
     /**
      * @param args the command line arguments
@@ -334,22 +686,25 @@ public class StaffManagement extends javax.swing.JFrame {
     private javax.swing.JButton AddCustomerBtn;
     private javax.swing.JPanel AddTab;
     private javax.swing.JTextField AddressText;
+    private javax.swing.JRadioButton AdminRadio;
+    private javax.swing.JRadioButton AllRadio;
     private javax.swing.JLabel BackBtn;
     private javax.swing.JButton DeleteBtn;
     private javax.swing.JButton EditChangeBtn;
-    private javax.swing.JButton EditChangeBtn1;
     private javax.swing.JTextField EmailText;
     private javax.swing.ButtonGroup FilterStaffGroup;
     private javax.swing.JTextField NameText;
+    private javax.swing.JButton NewButton;
     private javax.swing.JTabbedPane ParentPanel;
     private javax.swing.JTextField PassText;
     private javax.swing.JTextField PhoneText;
+    private javax.swing.JComboBox<String> RoleCb;
     private javax.swing.JButton SearchBtn;
     private javax.swing.JPanel SearchTab;
     private javax.swing.JTable SearchTable;
     private javax.swing.JTextField SearchTxb;
+    private javax.swing.JRadioButton StaffRadio;
     private javax.swing.JButton UpdateCustomerBtn;
-    private javax.swing.JComboBox<String> jComboBox1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel2;
@@ -361,9 +716,6 @@ public class StaffManagement extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
-    private javax.swing.JRadioButton jRadioButton1;
-    private javax.swing.JRadioButton jRadioButton2;
-    private javax.swing.JRadioButton jRadioButton3;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 }

@@ -57,12 +57,12 @@ public class ImportManagement extends javax.swing.JFrame {
     public void resetText() // reset textfield after event done!
     {
         SearchTxb.setText("");
-        NameTxb.setText("");
-        NameTxb.enable(true);
-        AddressTxb.setText("");
-        PhoneNumberTxb.setText("");
-        EmailTxb.setText("");
-        ProductTxb.setText("");
+//        NameTxb.setText("");
+//        NameTxb.enable(true);
+//        AddressTxb.setText("");
+//        PhoneNumberTxb.setText("");
+//        EmailTxb.setText("");
+//        ProductTxb.setText("");
     }
     /**
      * This method is called from within the constructor to initialize the form.
